@@ -14,28 +14,28 @@ extern crate bound_tcp_stream;
 
 use bound_tcp_stream::BoundTcpStream;
 use std::io::prelude::*;
-use std::net::{Ipv4Addr, SocketAddrV4, SocketAddr};
+use std::net::{IpAddr, Ipv4Addr, SocketAddrV4, SocketAddr};
 
 fn main() {
-    let source_addr = SocketAddrV4::new(Ipv4Addr::new(10, 240, 34, 166), 0);
-    let dest_addr = SocketAddrV4::new(Ipv4Addr::new(185, 30, 166, 38), 6667);
+    let dest_addr = SocketAddrV4::new(Ipv4Addr::new(195, 154, 200, 232), 6667);
 
-    //run(0, SocketAddr::V4(source_addr), SocketAddr::V4(dest_addr));
+    let ips = vec![
+        Ipv4Addr::new(192, 168, 1, 162),
+    ];
+    let mut source_addrs: Vec<SocketAddrV4> = vec![];
+    for i in 0..ips.len() {
+        source_addrs.push(SocketAddrV4::new(ips[i], 0));
+    }
 
-    let nums = vec![1, 2, 3];
-
-for i in 0..nums.len() {
-    println!("{}", nums[i]);
-}
-
-    let
-
-    for
     for i in 0..29 {
-        thread::spawn(move || {
-            run(i, SocketAddr::V4(source_addr), SocketAddr::V4(dest_addr));
-        });
-        thread::sleep(time::Duration::from_millis(2000));
+        for j in 0..source_addrs.len() {
+            let source_addr = source_addrs[j];
+            let bot_id = j * 100 + i;
+            thread::spawn(move || {
+                run(bot_id as i32, SocketAddr::V4(source_addr), SocketAddr::V4(dest_addr));
+            });
+            thread::sleep(time::Duration::from_millis(10000));
+        }
     }
 
     loop {
@@ -45,7 +45,7 @@ for i in 0..nums.len() {
 
 fn run(i: i32, source_addr: SocketAddr, dest_addr: SocketAddr) {
     let config = Config {
-        nickname: Some(format!("\\46bot{}", i)),
+        nickname: Some(format!("zzbot{}", i)),
         channels: Some(vec![format!("#cs-york-dev")]),
         source_addr: Some(source_addr),
         dest_addr: Some(dest_addr),
