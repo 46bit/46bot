@@ -20,8 +20,7 @@ fn main() {
     let dest_addr = SocketAddrV6::new(Ipv6Addr::from_str("2a00:1a28:1100:11::42").unwrap(), 6667, 0, 0);
 
     let ips = vec![
-	        
-Ipv6Addr::from_str("2604:a880:800:10::19e0:7000").unwrap(),
+        Ipv6Addr::from_str("2604:a880:800:10::19e0:7000").unwrap(),
         Ipv6Addr::from_str("2604:a880:800:10::19e0:7002").unwrap(),
         Ipv6Addr::from_str("2604:a880:800:10::19e0:7003").unwrap(),
         Ipv6Addr::from_str("2604:a880:800:10::19e0:7004").unwrap(),
@@ -42,14 +41,16 @@ Ipv6Addr::from_str("2604:a880:800:10::19e0:7000").unwrap(),
         source_addrs.push(SocketAddrV6::new(ips[i], 0, 0, 0));
     }
 
+    let mut bot_count = 0;
     for i in 0..29 {
         for j in 0..source_addrs.len() {
             let source_addr = source_addrs[j];
-            let bot_id = (1 + j) * 100 + i;
             thread::spawn(move || {
+                let bot_id = bot_count;
                 run(bot_id as i32, SocketAddr::V6(source_addr), SocketAddr::V6(dest_addr));
             });
             thread::sleep(time::Duration::from_millis(1000));
+            bot_count += 1;
         }
         thread::sleep(time::Duration::from_millis(3000));
     }
@@ -69,12 +70,15 @@ fn run(i: i32, source_addr: SocketAddr, dest_addr: SocketAddr) {
     };
     let server = IrcServer::from_config(config).unwrap();
     server.identify().unwrap();
+
     for message in server.iter() {
         let message = message.unwrap(); // We'll just panic if there's an error.
-        print!("{}", message);
+        print!("{:?}", message);
         match message.command {
-            Command::PRIVMSG(ref target, ref msg) => if msg.contains("pickles") {
-                server.send_privmsg(target, "Hi!").unwrap();
+            Command::PRIVMSG(ref target, ref msg) => {
+                if msg.contains("pickles") {
+                    server.send_privmsg(target, "Hi!").unwrap();
+                }
             },
             _ => (),
         }
