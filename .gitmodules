@@ -1,0 +1,3 @@
+[submodule "misc/irc"]
+  path = misc/irc
+  url = https://github.com/46bit/irc
