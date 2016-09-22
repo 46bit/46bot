@@ -1,0 +1,14 @@
+[package]
+name = "46bot"
+version = "0.1.0"
+authors = ["Michael Mokrysz <hi@46b.it>"]
+
+[dependencies]
+#irc = "0.11.4"
+libc = "0.2.0"
+
+[dependencies.irc]
+path = "misc/irc"
+
+[dependencies.bound_tcp_stream]
+path = "misc/bound_tcp_stream"

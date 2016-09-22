@@ -1,0 +1,8 @@
+[package]
+name = "bound_tcp_stream"
+version = "0.1.0"
+authors = ["Michael Mokrysz <hi@46b.it>"]
+debug = true
+
+[dependencies]
+libc = "0.2.0"
