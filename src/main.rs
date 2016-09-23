@@ -62,7 +62,7 @@ fn main() {
 
 fn run(bot_id: u64, source_addr: SocketAddr, dest_addr: SocketAddr) {
     let config = Config {
-        nickname: Some(format!("\\46boit{}", bot_id)),
+        nickname: Some(format!("\\46bot{}", bot_id)),
         channels: Some(vec![format!("#46bots")]),
         source_addr: Some(source_addr),
         dest_addr: Some(dest_addr),
@@ -73,7 +73,7 @@ fn run(bot_id: u64, source_addr: SocketAddr, dest_addr: SocketAddr) {
 
     for message in server.iter() {
         let message = message.unwrap(); // We'll just panic if there's an error.
-        print!("{:?}", message);
+        //print!("{:?}", message);
 
         match message.command {
             Command::PRIVMSG(ref target, ref msg) => {
@@ -85,23 +85,28 @@ fn run(bot_id: u64, source_addr: SocketAddr, dest_addr: SocketAddr) {
             _ => (),
         }
 
-        if message.prefix.is_some() && message.prefix.unwrap() == "_46bit!~fortysix@pdpc/supporter/student/mmokrysz" {
-            match message.command {
-                Command::PRIVMSG(ref target, ref msg) => {
-                    if msg == "\\46bots: quit" {
-                        thread::sleep(time::Duration::from_millis(50 * bot_id));
-                        server.send_quit("_46bites the dust.").unwrap();
-                    } else if msg.starts_with("\\46bots: join ") {
-                        thread::sleep(time::Duration::from_millis(50 * bot_id));
-                        let (_, channel) = msg.split_at("\\46bots: join ".len());
-                        server.send_join(channel).unwrap();
-                    } else if msg.starts_with("\\46bots: say ") {
-                        thread::sleep(time::Duration::from_millis(50 * bot_id));
-                        let (_, words) = msg.split_at("\\46bots: say ".len());
-                        server.send_notice(target, words).unwrap();
-                    }
-                },
-                _ => (),
+        if message.prefix.is_some() {
+            let prefix = message.prefix.unwrap();
+            if prefix == "_46bit!~fortysix@pdpc/supporter/student/mmokrysz" {
+                match message.command {
+                    Command::PRIVMSG(ref target, ref msg) => {
+                        print!("prefix={:?} command={:?}", prefix, message.command);
+                        if msg == "\\46bots: quit" {
+                            thread::sleep(time::Duration::from_millis(50 * bot_id));
+                            server.send_quit("_46bites the dust.").unwrap();
+                            return;
+                        } else if msg.starts_with("\\46bots: join ") {
+                            thread::sleep(time::Duration::from_millis(50 * bot_id));
+                            let (_, channel) = msg.split_at("\\46bots: join ".len());
+                            server.send_join(channel).unwrap();
+                        } else if msg.starts_with("\\46bots: say ") {
+                            thread::sleep(time::Duration::from_millis(50 * bot_id));
+                            let (_, words) = msg.split_at("\\46bots: say ".len());
+                            server.send_notice(target, words).unwrap();
+                        }
+                    },
+                    _ => (),
+                }
             }
         }
     }
