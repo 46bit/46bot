@@ -3,7 +3,8 @@ use utils::*;
 use std::mem;
 use std::io::Result;
 use std::net::{TcpStream, SocketAddr, SocketAddrV4, SocketAddrV6};
-use std::os::unix::prelude::*;
+// @TODO: Implement ToRawFd, IntoRawFd, FromRawFd on TcpSocket.
+use std::os::unix::io::{RawFd, FromRawFd};
 use libc;
 
 // From std::sys::unix::net
@@ -63,6 +64,7 @@ impl TcpSocket {
         }
     }
 
+    // From std::sys::unix::net Socket
     #[cfg(not(any(target_env = "newlib", target_os = "solaris", target_os = "emscripten")))]
     fn set_cloexec(&self) -> Result<()> {
         unsafe {
