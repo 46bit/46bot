@@ -2,7 +2,7 @@ use utils::*;
 use tcp_socket::*;
 
 use std::io::{Result, Error, ErrorKind};
-use std::net::{TcpStream,SocketAddr,ToSocketAddrs};
+use std::net::{TcpStream, SocketAddr, ToSocketAddrs};
 use libc;
 
 pub struct BoundTcpStream;
@@ -17,7 +17,7 @@ impl BoundTcpStream {
         let socket = Self::each_addr(source_addr, Self::try_socket_and_bind)?;
         match Self::each_addr_with_param(dest_addr, &socket, Self::try_connect) {
             Ok(_) => Ok(socket.as_tcp_stream()),
-            Err(e) => Err(e)
+            Err(e) => Err(e),
         }
     }
 

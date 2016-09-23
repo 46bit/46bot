@@ -2,7 +2,7 @@ use utils::*;
 
 use std::mem;
 use std::io::Result;
-use std::net::{TcpStream,SocketAddr,SocketAddrV4,SocketAddrV6};
+use std::net::{TcpStream, SocketAddr, SocketAddrV4, SocketAddrV6};
 use std::os::unix::prelude::*;
 use libc;
 
@@ -43,7 +43,9 @@ impl TcpSocket {
         let (mut sockaddr, sockaddr_size) = self.sockaddr(addr);
 
         unsafe {
-          cvt(libc::bind(self.0, &mut sockaddr as *mut _ as *mut libc::sockaddr, sockaddr_size as u32))
+            cvt(libc::bind(self.0,
+                           &mut sockaddr as *mut _ as *mut libc::sockaddr,
+                           sockaddr_size as u32))
         }
     }
 
@@ -55,7 +57,9 @@ impl TcpSocket {
         let (mut sockaddr, sockaddr_size) = self.sockaddr(addr);
 
         unsafe {
-            cvt(libc::connect(self.0, &mut sockaddr as *mut _ as *mut libc::sockaddr, sockaddr_size as u32))
+            cvt(libc::connect(self.0,
+                              &mut sockaddr as *mut _ as *mut libc::sockaddr,
+                              sockaddr_size as u32))
         }
     }
 
@@ -84,7 +88,9 @@ impl TcpSocket {
 
     fn sockaddr_in4(&self, addr: SocketAddrV4) -> (libc::sockaddr_storage, usize) {
         let mut sockaddr: libc::sockaddr_in;
-        unsafe { sockaddr = mem::zeroed(); }
+        unsafe {
+            sockaddr = mem::zeroed();
+        }
 
         sockaddr.sin_family = libc::AF_INET as libc::sa_family_t;
         sockaddr.sin_port = addr.port().to_be();
@@ -97,7 +103,9 @@ impl TcpSocket {
 
     fn sockaddr_in6(&self, addr: SocketAddrV6) -> (libc::sockaddr_storage, usize) {
         let mut sockaddr: libc::sockaddr_in6;
-        unsafe { sockaddr = mem::zeroed(); }
+        unsafe {
+            sockaddr = mem::zeroed();
+        }
 
         sockaddr.sin6_family = libc::AF_INET6 as libc::sa_family_t;
         sockaddr.sin6_port = addr.port().to_be();
