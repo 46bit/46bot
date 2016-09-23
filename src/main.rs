@@ -1,53 +1,46 @@
 extern crate irc;
 extern crate libc;
+extern crate bound_tcp_stream;
 
 use std::default::Default;
 use irc::client::prelude::*;
 use std::thread;
 use std::time;
 use std::str::FromStr;
-use std::mem;
-use std::os::unix::prelude::*;
-use std::net;
-
-extern crate bound_tcp_stream;
-
-use bound_tcp_stream::BoundTcpStream;
-use std::io::prelude::*;
-use std::net::{IpAddr, Ipv4Addr, SocketAddrV4, SocketAddr, Ipv6Addr, SocketAddrV6};
+use std::net::{IpAddr, SocketAddr};
 
 fn main() {
-    let dest_addr = SocketAddrV6::new(Ipv6Addr::from_str("2a00:1a28:1100:11::42").unwrap(), 6667, 0, 0);
+    let dest_addr = SocketAddr::new(IpAddr::from_str("2a00:1a28:1100:11::42").unwrap(), 6667);
 
     let ips = vec![
-        Ipv6Addr::from_str("2604:a880:800:10::19e0:7000").unwrap(),
-        Ipv6Addr::from_str("2604:a880:800:10::19e0:7002").unwrap(),
-        Ipv6Addr::from_str("2604:a880:800:10::19e0:7003").unwrap(),
-        Ipv6Addr::from_str("2604:a880:800:10::19e0:7004").unwrap(),
-        Ipv6Addr::from_str("2604:a880:800:10::19e0:7005").unwrap(),
-        Ipv6Addr::from_str("2604:a880:800:10::19e0:7006").unwrap(),
-        Ipv6Addr::from_str("2604:a880:800:10::19e0:7007").unwrap(),
-        Ipv6Addr::from_str("2604:a880:800:10::19e0:7008").unwrap(),
-        Ipv6Addr::from_str("2604:a880:800:10::19e0:7009").unwrap(),
-        Ipv6Addr::from_str("2604:a880:800:10::19e0:700a").unwrap(),
-        Ipv6Addr::from_str("2604:a880:800:10::19e0:700b").unwrap(),
-        Ipv6Addr::from_str("2604:a880:800:10::19e0:700c").unwrap(),
-        Ipv6Addr::from_str("2604:a880:800:10::19e0:700d").unwrap(),
-        Ipv6Addr::from_str("2604:a880:800:10::19e0:700e").unwrap(),
-        Ipv6Addr::from_str("2604:a880:800:10::19e0:700f").unwrap(),
+        IpAddr::from_str("2604:a880:800:10::19e0:7000").unwrap(),
+        IpAddr::from_str("2604:a880:800:10::19e0:7002").unwrap(),
+        IpAddr::from_str("2604:a880:800:10::19e0:7003").unwrap(),
+        IpAddr::from_str("2604:a880:800:10::19e0:7004").unwrap(),
+        IpAddr::from_str("2604:a880:800:10::19e0:7005").unwrap(),
+        IpAddr::from_str("2604:a880:800:10::19e0:7006").unwrap(),
+        IpAddr::from_str("2604:a880:800:10::19e0:7007").unwrap(),
+        IpAddr::from_str("2604:a880:800:10::19e0:7008").unwrap(),
+        IpAddr::from_str("2604:a880:800:10::19e0:7009").unwrap(),
+        IpAddr::from_str("2604:a880:800:10::19e0:700a").unwrap(),
+        IpAddr::from_str("2604:a880:800:10::19e0:700b").unwrap(),
+        IpAddr::from_str("2604:a880:800:10::19e0:700c").unwrap(),
+        IpAddr::from_str("2604:a880:800:10::19e0:700d").unwrap(),
+        IpAddr::from_str("2604:a880:800:10::19e0:700e").unwrap(),
+        IpAddr::from_str("2604:a880:800:10::19e0:700f").unwrap(),
     ];
-    let mut source_addrs: Vec<SocketAddrV6> = vec![];
+    let mut source_addrs: Vec<SocketAddr> = vec![];
     for i in 0..ips.len() {
-        source_addrs.push(SocketAddrV6::new(ips[i], 0, 0, 0));
+        source_addrs.push(SocketAddr::new(ips[i], 0));
     }
 
     let mut bot_count = 0;
-    for i in 0..29 {
+    for _ in 0..29 {
         for j in 0..source_addrs.len() {
             let source_addr = source_addrs[j];
             thread::spawn(move || {
                 let bot_id = bot_count;
-                run(bot_id as u64, SocketAddr::V6(source_addr), SocketAddr::V6(dest_addr));
+                run(bot_id as u64, source_addr, dest_addr);
             });
             thread::sleep(time::Duration::from_millis(1000));
             bot_count += 1;
