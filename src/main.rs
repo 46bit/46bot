@@ -77,8 +77,8 @@ fn run(bot_id: u64, source_addr: SocketAddr, dest_addr: SocketAddr) {
 
         match message.command {
             Command::PRIVMSG(ref target, ref msg) => {
-                if msg.contains("\\46bots: leave") {
-                    thread::sleep(time::Duration::from_millis(100 * bot_id));
+                if msg == "\\46bots: leave" {
+                    thread::sleep(time::Duration::from_millis(50 * bot_id));
                     server.send_part(target).unwrap();
                 }
             },
@@ -88,9 +88,17 @@ fn run(bot_id: u64, source_addr: SocketAddr, dest_addr: SocketAddr) {
         if message.prefix.is_some() && message.prefix.unwrap() == "_46bit!~fortysix@pdpc/supporter/student/mmokrysz" {
             match message.command {
                 Command::PRIVMSG(ref target, ref msg) => {
-                    if msg.contains("\\46bots: quit") {
-                        thread::sleep(time::Duration::from_millis(100 * bot_id));
+                    if msg == "\\46bots: quit" {
+                        thread::sleep(time::Duration::from_millis(50 * bot_id));
                         server.send_quit("_46bites the dust.").unwrap();
+                    } else if msg.starts_with("\\46bots: join ") {
+                        thread::sleep(time::Duration::from_millis(50 * bot_id));
+                        let (_, channel) = msg.split_at("\\46bots: join ".len());
+                        server.send_join(channel).unwrap();
+                    } else if msg.starts_with("\\46bots: say ") {
+                        thread::sleep(time::Duration::from_millis(50 * bot_id));
+                        let (_, words) = msg.split_at("\\46bots: say ".len());
+                        server.send_notice(target, words).unwrap();
                     }
                 },
                 _ => (),
