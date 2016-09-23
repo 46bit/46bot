@@ -47,7 +47,7 @@ fn main() {
             let source_addr = source_addrs[j];
             thread::spawn(move || {
                 let bot_id = bot_count;
-                run(bot_id as i32, SocketAddr::V6(source_addr), SocketAddr::V6(dest_addr));
+                run(bot_id as u64, SocketAddr::V6(source_addr), SocketAddr::V6(dest_addr));
             });
             thread::sleep(time::Duration::from_millis(1000));
             bot_count += 1;
@@ -60,10 +60,10 @@ fn main() {
     }
 }
 
-fn run(i: i32, source_addr: SocketAddr, dest_addr: SocketAddr) {
+fn run(bot_id: u64, source_addr: SocketAddr, dest_addr: SocketAddr) {
     let config = Config {
-        nickname: Some(format!("\\46boit{}", i)),
-        channels: Some(vec![format!("#cs-york-dev")]),
+        nickname: Some(format!("\\46boit{}", bot_id)),
+        channels: Some(vec![format!("#46bots")]),
         source_addr: Some(source_addr),
         dest_addr: Some(dest_addr),
         .. Default::default()
@@ -74,13 +74,27 @@ fn run(i: i32, source_addr: SocketAddr, dest_addr: SocketAddr) {
     for message in server.iter() {
         let message = message.unwrap(); // We'll just panic if there's an error.
         print!("{:?}", message);
+
         match message.command {
             Command::PRIVMSG(ref target, ref msg) => {
-                if msg.contains("pickles") {
-                    server.send_privmsg(target, "Hi!").unwrap();
+                if msg.contains("\\46bots: leave") {
+                    thread::sleep(time::Duration::from_millis(100 * bot_id));
+                    server.send_part(target).unwrap();
                 }
             },
             _ => (),
+        }
+
+        if message.prefix.is_some() && message.prefix.unwrap() == "_46bit!~fortysix@pdpc/supporter/student/mmokrysz" {
+            match message.command {
+                Command::PRIVMSG(ref target, ref msg) => {
+                    if msg.contains("\\46bots: quit") {
+                        thread::sleep(time::Duration::from_millis(100 * bot_id));
+                        server.send_quit("_46bites the dust.").unwrap();
+                    }
+                },
+                _ => (),
+            }
         }
     }
 }
